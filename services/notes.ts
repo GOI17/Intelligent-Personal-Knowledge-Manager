@@ -24,3 +24,8 @@ export const notesApi = {
     await db.notes.delete(id);
   }
 };
+
+export const useGetNotesQuery = notesApi.useGetNotesQuery;
+export const useCreateNoteMutation = notesApi.useCreateNoteMutation;
+export const useUpdateNoteMutation = notesApi.useUpdateNoteMutation;
+export const useDeleteNoteMutation = notesApi.useDeleteNoteMutation;
