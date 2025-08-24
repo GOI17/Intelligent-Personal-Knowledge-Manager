@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User, CreateUserInput, DBUser } from '@/types';
 import { hashPassword, verifyPassword } from '@/lib/auth-utils';
+import { db } from '@/lib/database';
+import { v4 as uuid } from 'uuid';
 
 type AuthContextType = {
   user: User | null;
@@ -49,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const newUser: DBUser = {
       ...userData,
-      id: crypto.randomUUID(),
+      id: uuid.v4(),
       createdAt: new Date(),
       password: await hashPassword(userData.password),
     };

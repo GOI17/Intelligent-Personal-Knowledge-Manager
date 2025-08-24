@@ -1,12 +1,13 @@
+import bcrypt from 'bcrypt';
+
 export const hashPassword = async (password: string): Promise<string> => {
-  // In a real app, use proper password hashing like bcrypt
-  return btoa(password);
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
 };
 
 export const verifyPassword = async (
   password: string,
   hash: string
 ): Promise<boolean> => {
-  // In a real app, use proper password verification
-  return btoa(password) === hash;
+  return await bcrypt.compare(password, hash);
 };
