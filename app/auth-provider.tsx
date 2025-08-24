@@ -24,15 +24,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    // TODO: Implement actual auth API call
-    const mockUser: User = {
-      id: '1',
-      email,
-      name: 'Test User',
-      createdAt: new Date(),
-    };
-    setUser(mockUser);
-    localStorage.setItem('user', JSON.stringify(mockUser));
+    // In a real app, this would be an API call with proper authentication
+    const user = await db.users.get({ email });
+    
+    if (!user || user.password !== password) {
+      throw new Error('Invalid email or password');
+    }
+
+    setUser(user);
+    localStorage.setItem('user', JSON.stringify(user));
   };
 
   const logout = () => {

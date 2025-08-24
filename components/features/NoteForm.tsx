@@ -117,17 +117,32 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading = false }: NoteFo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tags">Tags</Label>
-            <Input
-              id="tags"
-              value={formData.tags}
-              onChange={handleInputChange('tags')}
-              placeholder="Enter tags separated by commas (e.g., react, javascript, programming)"
-              disabled={isLoading}
+            <Label>Tags</Label>
+            <TagManager
+              tags={formData.tags}
+              onTagCreate={async (name) => {
+                const newTag = await createTag({ 
+                  name,
+                  color: '#808080',
+                  createdAt: new Date(),
+                  updatedAt: new Date()
+                });
+                setFormData(prev => ({
+                  ...prev,
+                  tags: [...prev.tags, newTag.id]
+                }));
+              }}
+              onTagDelete={async (tagId) => {
+                await deleteTag(tagId);
+                setFormData(prev => ({
+                  ...prev,
+                  tags: prev.tags.filter(id => id !== tagId)
+                }));
+              }}
+              onTagUpdate={async (tagId, newName) => {
+                await updateTag(tagId, { name: newName });
+              }}
             />
-            <p className="text-sm text-muted-foreground">
-              Separate multiple tags with commas
-            </p>
           </div>
         </CardContent>
         <CardFooter className="flex gap-2">

@@ -4,18 +4,30 @@ export interface DBNote {
   id: string;
   title: string;
   content: string;
-  tags: string[];
+  tagIds: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface DBTag {
+  id: string;
+  name: string;
+  color: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export class NotesDatabase extends Dexie {
   notes!: Dexie.Table<DBNote, string>;
+  tags!: Dexie.Table<DBTag, string>;
+  noteTags!: Dexie.Table<{ noteId: string; tagId: string }, [string, string]>;
 
   constructor() {
     super('NotesDatabase');
-    this.version(1).stores({
-      notes: 'id, title, tags, createdAt'
+    this.version(2).stores({
+      notes: 'id, title, createdAt',
+      tags: 'id, name, createdAt',
+      noteTags: '[noteId+tagId], noteId, tagId'
     });
   }
 }
