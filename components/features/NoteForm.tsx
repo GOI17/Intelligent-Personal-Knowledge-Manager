@@ -55,15 +55,10 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading = false }: NoteFo
       return;
     }
 
-    const tags = formData.tags
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag.length > 0);
-
     const noteData = {
       title: formData.title.trim(),
       content: formData.content.trim(),
-      tags,
+      tags: formData.tags,
     };
 
     onSubmit(noteData);

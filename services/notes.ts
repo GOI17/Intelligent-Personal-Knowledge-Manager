@@ -2,12 +2,11 @@ import { db } from '@/lib/database';
 
 export const notesApi = {
   getNotes: async (searchQuery: string) => {
+    const query = searchQuery.toLowerCase();
     return db.notes
-      .filter(note => 
-        note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        note.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
+      .where('title').startsWithIgnoreCase(query)
+      .or('content').startsWithIgnoreCase(query)
+      .or('tags').anyOf([query])
       .toArray();
   },
 
