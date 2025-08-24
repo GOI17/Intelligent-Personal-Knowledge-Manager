@@ -1,7 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { User } from '@/types';
+import type { User, CreateUserInput, DBUser } from '@/types';
+import { hashPassword, verifyPassword } from '@/lib/auth-utils';
 
 type AuthContextType = {
   user: User | null;
@@ -24,15 +25,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    // In a real app, this would be an API call with proper authentication
     const user = await db.users.get({ email });
     
-    if (!user || user.password !== password) {
+    if (!user || !(await verifyPassword(password, user.password))) {
       throw new Error('Invalid email or password');
     }
 
-    setUser(user);
-    localStorage.setItem('user', JSON.stringify(user));
+    const { password: _, ...userWithoutPassword } = user;
+    setUser(userWithoutPassword);
+    localStorage.setItem('user', JSON.stringify(userWithoutPassword));
   };
 
   const logout = () => {
@@ -40,15 +41,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('user');
   };
 
-  const register = async (userData: Omit<User, 'id' | 'createdAt'>) => {
-    // TODO: Implement actual registration API call
-    const newUser: User = {
+  const register = async (userData: CreateUserInput) => {
+    const existingUser = await db.users.get({ email: userData.email });
+    if (existingUser) {
+      throw new Error('User already exists');
+    }
+
+    const newUser: DBUser = {
       ...userData,
-      id: '2',
+      id: crypto.randomUUID(),
       createdAt: new Date(),
+      password: await hashPassword(userData.password),
     };
-    setUser(newUser);
-    localStorage.setItem('user', JSON.stringify(newUser));
+
+    await db.users.add(newUser);
+    
+    const { password: _, ...userWithoutPassword } = newUser;
+    setUser(userWithoutPassword);
+    localStorage.setItem('user', JSON.stringify(userWithoutPassword));
   };
 
   return (
