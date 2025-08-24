@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Button, Input, Textarea, Label, Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui';
+import { Button, Input, Label, Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '@/types';
 
 interface NoteFormProps {
@@ -12,6 +14,17 @@ interface NoteFormProps {
 }
 
 export function NoteForm({ note, onSubmit, onCancel, isLoading = false }: NoteFormProps) {
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: note?.content || '',
+    onUpdate: ({ editor }) => {
+      setFormData(prev => ({
+        ...prev,
+        content: editor.getHTML()
+      }));
+    },
+  });
+
   const [formData, setFormData] = useState({
     title: note?.title || '',
     content: note?.content || '',
@@ -97,14 +110,12 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading = false }: NoteFo
 
           <div className="space-y-2">
             <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={handleInputChange('content')}
-              placeholder="Write your note content here..."
-              className={`min-h-[200px] ${errors.content ? 'border-destructive' : ''}`}
-              disabled={isLoading}
-            />
+            <div className={`rounded-md border p-2 ${errors.content ? 'border-destructive' : 'border-input'}`}>
+              <EditorContent 
+                editor={editor} 
+                className="min-h-[200px] p-2 focus:outline-none" 
+              />
+            </div>
             {errors.content && (
               <p className="text-sm text-destructive">{errors.content}</p>
             )}

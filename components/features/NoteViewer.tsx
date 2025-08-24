@@ -45,9 +45,10 @@ export function NoteViewer({ note, onEdit, onDelete, onClose }: NoteViewerProps)
       
       <CardContent className="space-y-4">
         <div className="prose prose-sm max-w-none">
-          <div className="text-foreground whitespace-pre-line leading-relaxed">
-            {note.content}
-          </div>
+          <div 
+            className="text-foreground whitespace-pre-line leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: note.content }}
+          />
         </div>
         
         {note.tags.length > 0 && (
