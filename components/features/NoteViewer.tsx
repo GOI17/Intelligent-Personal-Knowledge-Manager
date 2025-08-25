@@ -1,8 +1,16 @@
 "use client";
 
-import React from 'react';
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui';
-import type { Note } from '@/types';
+import React from "react";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui";
+import type { Note } from "@/types";
 
 interface NoteViewerProps {
   note: Note;
@@ -11,14 +19,19 @@ interface NoteViewerProps {
   onClose: () => void;
 }
 
-export function NoteViewer({ note, onEdit, onDelete, onClose }: NoteViewerProps) {
+export function NoteViewer({
+  note,
+  onEdit,
+  onDelete,
+  onClose,
+}: NoteViewerProps) {
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   };
 
@@ -30,9 +43,12 @@ export function NoteViewer({ note, onEdit, onDelete, onClose }: NoteViewerProps)
             <CardTitle className="text-2xl mb-2">{note.title}</CardTitle>
             <CardDescription>
               <div className="space-y-1">
-                <div>Created: {formatDate(note.createdAt)}</div>
-                {new Date(note.updatedAt).getTime() !== new Date(note.createdAt).getTime() && (
-                  <div>Last updated: {formatDate(note.updatedAt)}</div>
+                <div>Created: {formatDate(new Date(note.createdAt))}</div>
+                {new Date(note.updatedAt).getTime() !==
+                  new Date(note.createdAt).getTime() && (
+                  <div>
+                    Last updated: {formatDate(new Date(note.updatedAt))}
+                  </div>
                 )}
               </div>
             </CardDescription>
@@ -42,15 +58,15 @@ export function NoteViewer({ note, onEdit, onDelete, onClose }: NoteViewerProps)
           </Button>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         <div className="prose prose-sm max-w-none">
-          <div 
+          <div
             className="text-foreground whitespace-pre-line leading-relaxed"
             dangerouslySetInnerHTML={{ __html: note.content }}
           />
         </div>
-        
+
         {note.tags.length > 0 && (
           <div className="pt-4 border-t">
             <h4 className="text-sm font-medium mb-2">Tags</h4>
@@ -69,22 +85,13 @@ export function NoteViewer({ note, onEdit, onDelete, onClose }: NoteViewerProps)
       </CardContent>
 
       <CardFooter className="flex gap-2">
-        <Button 
-          onClick={() => onEdit(note)}
-          className="flex-1"
-        >
+        <Button onClick={() => onEdit(note)} className="flex-1">
           Edit Note
         </Button>
-        <Button 
-          variant="outline"
-          onClick={onClose}
-        >
+        <Button variant="outline" onClick={onClose}>
           Close
         </Button>
-        <Button 
-          variant="destructive"
-          onClick={() => onDelete(note)}
-        >
+        <Button variant="destructive" onClick={() => onDelete(note)}>
           Delete
         </Button>
       </CardFooter>

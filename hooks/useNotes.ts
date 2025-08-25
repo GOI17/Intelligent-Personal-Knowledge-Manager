@@ -6,31 +6,6 @@ import {
   useUpdateNoteMutation,
   useDeleteNoteMutation
 } from '@/services/notes';
-  {
-    id: '1',
-    title: 'Welcome to Knowledge Manager',
-    content: 'This is your first note! You can create, edit, and delete notes using this interface. Try creating a new note using the "New Note" button.',
-    tags: ['welcome', 'tutorial'],
-    createdAt: new Date(Date.now() - 86400000), // 1 day ago
-    updatedAt: new Date(Date.now() - 86400000),
-  },
-  {
-    id: '2', 
-    title: 'React Hooks Best Practices',
-    content: 'Key points about React hooks:\n\n1. Always call hooks at the top level\n2. Use custom hooks to share logic\n3. useCallback and useMemo for performance\n4. useState for local state management',
-    tags: ['react', 'hooks', 'javascript'],
-    createdAt: new Date(Date.now() - 43200000), // 12 hours ago
-    updatedAt: new Date(Date.now() - 21600000), // 6 hours ago
-  },
-  {
-    id: '3',
-    title: 'TypeScript Tips',
-    content: 'Useful TypeScript patterns for better code:\n\n- Use interfaces for object shapes\n- Prefer type unions over any\n- Leverage utility types like Pick, Omit\n- Use generics for reusable components',
-    tags: ['typescript', 'programming', 'tips'],
-    createdAt: new Date(Date.now() - 21600000), // 6 hours ago
-    updatedAt: new Date(Date.now() - 10800000), // 3 hours ago
-  },
-];
 
 export function useNotes() {
   const { data: notes = [], isLoading } = useGetNotesQuery('');

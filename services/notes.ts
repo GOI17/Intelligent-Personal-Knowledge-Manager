@@ -35,7 +35,10 @@ export const notesApi = createApi({
     }),
     updateNote: builder.mutation<Note, UpdateNoteInput>({
       queryFn: async ({ id, ...updates }) => {
-        await db.notes.update(id, { ...updates, updatedAt: new Date().toISOString() });
+        await db.notes.update(id, {
+          ...updates,
+          updatedAt: new Date().toISOString(),
+        });
         const updatedNote = await db.notes.get(id);
         return { data: updatedNote as Note };
       },
@@ -44,7 +47,7 @@ export const notesApi = createApi({
     deleteNote: builder.mutation<void, string>({
       queryFn: async (id) => {
         await db.notes.delete(id);
-        return { data: undefined };
+        return { data: {} as unknown };
       },
       invalidatesTags: ["Note"],
     }),

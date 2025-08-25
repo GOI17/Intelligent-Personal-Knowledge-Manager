@@ -1,8 +1,16 @@
 "use client";
 
-import React from 'react';
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui';
-import type { Note } from '@/types';
+import React from "react";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui";
+import type { Note } from "@/types";
 
 interface NoteCardProps {
   note: Note;
@@ -14,10 +22,12 @@ interface NoteCardProps {
 export function NoteCard({ note, onEdit, onDelete, onView }: NoteCardProps) {
   const formatDate = (date: Date) => {
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+    );
+
     if (diffInHours < 1) {
-      return 'Just now';
+      return "Just now";
     } else if (diffInHours < 24) {
       return `${diffInHours} hours ago`;
     } else {
@@ -28,7 +38,7 @@ export function NoteCard({ note, onEdit, onDelete, onView }: NoteCardProps) {
 
   const truncateContent = (content: string, maxLength: number = 150) => {
     if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
+    return content.substring(0, maxLength) + "...";
   };
 
   return (
@@ -37,10 +47,10 @@ export function NoteCard({ note, onEdit, onDelete, onView }: NoteCardProps) {
         <CardHeader>
           <CardTitle className="text-lg line-clamp-2">{note.title}</CardTitle>
           <CardDescription>
-            Created {formatDate(note.createdAt)}
-            {new Date(note.updatedAt).getTime() !== new Date(note.createdAt).getTime() && 
-              ` • Updated ${formatDate(note.updatedAt)}`
-            }
+            Created {formatDate(new Date(note.createdAt))}
+            {new Date(note.updatedAt).getTime() !==
+              new Date(note.createdAt).getTime() &&
+              ` • Updated ${formatDate(new Date(note.updatedAt))}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
