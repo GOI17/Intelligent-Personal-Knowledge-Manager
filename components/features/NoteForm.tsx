@@ -29,7 +29,7 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading = false }: NoteFo
   const [formData, setFormData] = useState({
     title: note?.title || '',
     content: note?.content || '',
-    tags: note?.tags.join(', ') || '',
+    tags: note?.tags || [],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
