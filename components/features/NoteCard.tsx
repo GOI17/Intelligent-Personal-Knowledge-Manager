@@ -38,7 +38,7 @@ export function NoteCard({ note, onEdit, onDelete, onView }: NoteCardProps) {
           <CardTitle className="text-lg line-clamp-2">{note.title}</CardTitle>
           <CardDescription>
             Created {formatDate(note.createdAt)}
-            {note.updatedAt.getTime() !== note.createdAt.getTime() && 
+            {new Date(note.updatedAt).getTime() !== new Date(note.createdAt).getTime() && 
               ` • Updated ${formatDate(note.updatedAt)}`
             }
           </CardDescription>

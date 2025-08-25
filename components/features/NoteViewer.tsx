@@ -31,7 +31,7 @@ export function NoteViewer({ note, onEdit, onDelete, onClose }: NoteViewerProps)
             <CardDescription>
               <div className="space-y-1">
                 <div>Created: {formatDate(note.createdAt)}</div>
-                {note.updatedAt.getTime() !== note.createdAt.getTime() && (
+                {new Date(note.updatedAt).getTime() !== new Date(note.createdAt).getTime() && (
                   <div>Last updated: {formatDate(note.updatedAt)}</div>
                 )}
               </div>
