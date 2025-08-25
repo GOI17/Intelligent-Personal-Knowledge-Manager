@@ -33,8 +33,8 @@ export class NotesDatabase extends Dexie {
 
   constructor() {
     super('NotesDatabase');
-    this.version(3).stores({
-      notes: 'id, title, createdAt',
+    this.version(4).stores({
+      notes: 'id, title, content, createdAt',
       tags: 'id, name, createdAt',
       users: 'id, email, createdAt',
       noteTags: '[noteId+tagId], noteId, tagId'
