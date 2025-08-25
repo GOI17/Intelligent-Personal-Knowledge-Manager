@@ -9,23 +9,14 @@ export interface Note {
   userId?: string;
 }
 
-export interface CreateNoteInput extends Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'userId'> {}
-export interface UpdateNoteInput extends Partial<Omit<Note, 'id' | 'createdAt' | 'userId'>> {
+export type CreateNoteInput = Omit<
+  Note,
+  "id" | "createdAt" | "updatedAt" | "userId"
+>;
+
+export interface UpdateNoteInput
+  extends Partial<Omit<Note, "id" | "createdAt" | "userId">> {
   id: string;
-}
-
-// Note creation input (without id and timestamps)
-export interface CreateNoteInput {
-  title: string;
-  content: string;
-  tags: string[];
-}
-
-// Note update input (optional fields)
-export interface UpdateNoteInput {
-  title?: string;
-  content?: string;
-  tags?: string[];
 }
 
 // Tag interface

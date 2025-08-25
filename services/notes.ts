@@ -1,21 +1,24 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { db } from "@/lib/database";
-import type { Note, CreateNoteInput, UpdateNoteInput } from '@/types';
+import type { Note, CreateNoteInput, UpdateNoteInput } from "@/types";
 
 export const notesApi = createApi({
-  reducerPath: 'notesApi',
+  reducerPath: "notesApi",
   baseQuery: async (arg, api) => ({ data: await arg.queryFn(api) }),
-  tagTypes: ['Note'],
+  tagTypes: ["Note"],
   endpoints: (builder) => ({
     getNotes: builder.query<Note[], string>({
       queryFn: async (searchQuery) => ({
         data: await db.notes
-          .where("title").startsWithIgnoreCase(searchQuery)
-          .or("content").startsWithIgnoreCase(searchQuery)
-          .or("tags").anyOf([searchQuery])
-          .toArray()
+          .where("title")
+          .startsWithIgnoreCase(searchQuery)
+          .or("content")
+          .startsWithIgnoreCase(searchQuery)
+          .or("tags")
+          .anyOf([searchQuery])
+          .toArray(),
       }),
-      providesTags: ['Note']
+      providesTags: ["Note"],
     }),
     createNote: builder.mutation<Note, CreateNoteInput>({
       queryFn: async (newNote) => {
@@ -23,12 +26,12 @@ export const notesApi = createApi({
           ...newNote,
           id: crypto.randomUUID(),
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
         await db.notes.add(noteWithTimestamps);
         return { data: noteWithTimestamps };
       },
-      invalidatesTags: ['Note']
+      invalidatesTags: ["Note"],
     }),
     updateNote: builder.mutation<Note, UpdateNoteInput>({
       queryFn: async ({ id, ...updates }) => {
@@ -36,14 +39,14 @@ export const notesApi = createApi({
         const updatedNote = await db.notes.get(id);
         return { data: updatedNote as Note };
       },
-      invalidatesTags: ['Note']
+      invalidatesTags: ["Note"],
     }),
     deleteNote: builder.mutation<void, string>({
       queryFn: async (id) => {
         await db.notes.delete(id);
         return { data: undefined };
       },
-      invalidatesTags: ['Note']
+      invalidatesTags: ["Note"],
     }),
   }),
 });
