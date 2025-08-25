@@ -6,6 +6,12 @@ export interface Note {
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
+  userId?: string;
+}
+
+export interface CreateNoteInput extends Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'userId'> {}
+export interface UpdateNoteInput extends Partial<Omit<Note, 'id' | 'createdAt' | 'userId'>> {
+  id: string;
 }
 
 // Note creation input (without id and timestamps)

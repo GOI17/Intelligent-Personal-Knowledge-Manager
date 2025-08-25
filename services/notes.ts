@@ -1,34 +1,56 @@
-import { db, DBNote } from "@/lib/database";
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { db } from "@/lib/database";
+import type { Note, CreateNoteInput, UpdateNoteInput } from '@/types';
 
-export const notesApi = {
-  getNotes: async (searchQuery: string) => {
-    const query = searchQuery.toLowerCase();
-    return db.notes
-      .where("title")
-      .startsWithIgnoreCase(query)
-      .or("content")
-      .startsWithIgnoreCase(query)
-      .or("tags")
-      .anyOf([query])
-      .toArray();
-  },
+export const notesApi = createApi({
+  reducerPath: 'notesApi',
+  baseQuery: async (arg, api) => ({ data: await arg.queryFn(api) }),
+  tagTypes: ['Note'],
+  endpoints: (builder) => ({
+    getNotes: builder.query<Note[], string>({
+      queryFn: async (searchQuery) => ({
+        data: await db.notes
+          .where("title").startsWithIgnoreCase(searchQuery)
+          .or("content").startsWithIgnoreCase(searchQuery)
+          .or("tags").anyOf([searchQuery])
+          .toArray()
+      }),
+      providesTags: ['Note']
+    }),
+    createNote: builder.mutation<Note, CreateNoteInput>({
+      queryFn: async (newNote) => {
+        const noteWithTimestamps = {
+          ...newNote,
+          id: crypto.randomUUID(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        await db.notes.add(noteWithTimestamps);
+        return { data: noteWithTimestamps };
+      },
+      invalidatesTags: ['Note']
+    }),
+    updateNote: builder.mutation<Note, UpdateNoteInput>({
+      queryFn: async ({ id, ...updates }) => {
+        await db.notes.update(id, { ...updates, updatedAt: new Date() });
+        const updatedNote = await db.notes.get(id);
+        return { data: updatedNote as Note };
+      },
+      invalidatesTags: ['Note']
+    }),
+    deleteNote: builder.mutation<void, string>({
+      queryFn: async (id) => {
+        await db.notes.delete(id);
+        return { data: undefined };
+      },
+      invalidatesTags: ['Note']
+    }),
+  }),
+});
 
-  createNote: async (note: DBNote) => {
-    await db.notes.add(note);
-    return note;
-  },
-
-  updateNote: async (id: string, updates: Partial<DBNote>) => {
-    await db.notes.update(id, { ...updates, updatedAt: new Date() });
-    return { ...updates, id } as DBNote;
-  },
-
-  deleteNote: async (id: string) => {
-    await db.notes.delete(id);
-  },
-};
-
-export const useGetNotesQuery = notesApi.getNotes;
-export const useCreateNoteMutation = notesApi.createNote;
-export const useUpdateNoteMutation = notesApi.updateNote;
-export const useDeleteNoteMutation = notesApi.deleteNote;
+export const {
+  useGetNotesQuery,
+  useCreateNoteMutation,
+  useUpdateNoteMutation,
+  useDeleteNoteMutation,
+} = notesApi;
