@@ -25,8 +25,8 @@ export const notesApi = createApi({
         const noteWithTimestamps = {
           ...newNote,
           id: crypto.randomUUID(),
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         };
         await db.notes.add(noteWithTimestamps);
         return { data: noteWithTimestamps };
@@ -35,7 +35,7 @@ export const notesApi = createApi({
     }),
     updateNote: builder.mutation<Note, UpdateNoteInput>({
       queryFn: async ({ id, ...updates }) => {
-        await db.notes.update(id, { ...updates, updatedAt: new Date() });
+        await db.notes.update(id, { ...updates, updatedAt: new Date().toISOString() });
         const updatedNote = await db.notes.get(id);
         return { data: updatedNote as Note };
       },

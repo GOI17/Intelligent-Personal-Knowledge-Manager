@@ -5,8 +5,8 @@ export interface DBNote {
   title: string;
   content: string;
   tagIds: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface DBTag {

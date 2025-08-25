@@ -4,8 +4,8 @@ export interface Note {
   title: string;
   content: string;
   tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   userId?: string;
 }
 
