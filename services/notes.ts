@@ -1,12 +1,15 @@
-import { db } from '@/lib/database';
+import { db, DBNote } from "@/lib/database";
 
 export const notesApi = {
   getNotes: async (searchQuery: string) => {
     const query = searchQuery.toLowerCase();
     return db.notes
-      .where('title').startsWithIgnoreCase(query)
-      .or('content').startsWithIgnoreCase(query)
-      .or('tags').anyOf([query])
+      .where("title")
+      .startsWithIgnoreCase(query)
+      .or("content")
+      .startsWithIgnoreCase(query)
+      .or("tags")
+      .anyOf([query])
       .toArray();
   },
 
@@ -16,16 +19,16 @@ export const notesApi = {
   },
 
   updateNote: async (id: string, updates: Partial<DBNote>) => {
-    await db.notes.update(id, {...updates, updatedAt: new Date()});
-    return {...updates, id} as DBNote;
+    await db.notes.update(id, { ...updates, updatedAt: new Date() });
+    return { ...updates, id } as DBNote;
   },
 
   deleteNote: async (id: string) => {
     await db.notes.delete(id);
-  }
+  },
 };
 
-export const useGetNotesQuery = notesApi.useGetNotesQuery;
-export const useCreateNoteMutation = notesApi.useCreateNoteMutation;
-export const useUpdateNoteMutation = notesApi.useUpdateNoteMutation;
-export const useDeleteNoteMutation = notesApi.useDeleteNoteMutation;
+export const useGetNotesQuery = notesApi.getNotes;
+export const useCreateNoteMutation = notesApi.createNote;
+export const useUpdateNoteMutation = notesApi.updateNote;
+export const useDeleteNoteMutation = notesApi.deleteNote;
