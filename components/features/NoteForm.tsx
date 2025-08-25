@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button, Input, Label, Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui';
+import { TagManager } from '@/components/features/TagManager';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '@/types';
