@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Button, Input, Textarea, Label, Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui';
+import { Button, Input, Label, Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui';
+import { TagManager } from '@/components/features/TagManager';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '@/types';
 
 interface NoteFormProps {
@@ -12,10 +15,21 @@ interface NoteFormProps {
 }
 
 export function NoteForm({ note, onSubmit, onCancel, isLoading = false }: NoteFormProps) {
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: note?.content || '',
+    onUpdate: ({ editor }) => {
+      setFormData(prev => ({
+        ...prev,
+        content: editor.getHTML()
+      }));
+    },
+  });
+
   const [formData, setFormData] = useState({
     title: note?.title || '',
     content: note?.content || '',
-    tags: note?.tags.join(', ') || '',
+    tags: note?.tags || [],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -42,15 +56,10 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading = false }: NoteFo
       return;
     }
 
-    const tags = formData.tags
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag.length > 0);
-
     const noteData = {
       title: formData.title.trim(),
       content: formData.content.trim(),
-      tags,
+      tags: formData.tags,
     };
 
     onSubmit(noteData);
@@ -97,31 +106,44 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading = false }: NoteFo
 
           <div className="space-y-2">
             <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={handleInputChange('content')}
-              placeholder="Write your note content here..."
-              className={`min-h-[200px] ${errors.content ? 'border-destructive' : ''}`}
-              disabled={isLoading}
-            />
+            <div className={`rounded-md border p-2 ${errors.content ? 'border-destructive' : 'border-input'}`}>
+              <EditorContent 
+                editor={editor} 
+                className="min-h-[200px] p-2 focus:outline-none" 
+              />
+            </div>
             {errors.content && (
               <p className="text-sm text-destructive">{errors.content}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tags">Tags</Label>
-            <Input
-              id="tags"
-              value={formData.tags}
-              onChange={handleInputChange('tags')}
-              placeholder="Enter tags separated by commas (e.g., react, javascript, programming)"
-              disabled={isLoading}
+            <Label>Tags</Label>
+            <TagManager
+              tags={formData.tags}
+              onTagCreate={async (name) => {
+                const newTag = await createTag({ 
+                  name,
+                  color: '#808080',
+                  createdAt: new Date(),
+                  updatedAt: new Date()
+                });
+                setFormData(prev => ({
+                  ...prev,
+                  tags: [...prev.tags, newTag.id]
+                }));
+              }}
+              onTagDelete={async (tagId) => {
+                await deleteTag(tagId);
+                setFormData(prev => ({
+                  ...prev,
+                  tags: prev.tags.filter(id => id !== tagId)
+                }));
+              }}
+              onTagUpdate={async (tagId, newName) => {
+                await updateTag(tagId, { name: newName });
+              }}
             />
-            <p className="text-sm text-muted-foreground">
-              Separate multiple tags with commas
-            </p>
           </div>
         </CardContent>
         <CardFooter className="flex gap-2">

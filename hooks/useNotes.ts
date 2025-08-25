@@ -1,68 +1,42 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '@/types';
-
-// Generate unique ID
-const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
-
-// Sample initial data
-const initialNotes: Note[] = [
-  {
-    id: '1',
-    title: 'Welcome to Knowledge Manager',
-    content: 'This is your first note! You can create, edit, and delete notes using this interface. Try creating a new note using the "New Note" button.',
-    tags: ['welcome', 'tutorial'],
-    createdAt: new Date(Date.now() - 86400000), // 1 day ago
-    updatedAt: new Date(Date.now() - 86400000),
-  },
-  {
-    id: '2', 
-    title: 'React Hooks Best Practices',
-    content: 'Key points about React hooks:\n\n1. Always call hooks at the top level\n2. Use custom hooks to share logic\n3. useCallback and useMemo for performance\n4. useState for local state management',
-    tags: ['react', 'hooks', 'javascript'],
-    createdAt: new Date(Date.now() - 43200000), // 12 hours ago
-    updatedAt: new Date(Date.now() - 21600000), // 6 hours ago
-  },
-  {
-    id: '3',
-    title: 'TypeScript Tips',
-    content: 'Useful TypeScript patterns for better code:\n\n- Use interfaces for object shapes\n- Prefer type unions over any\n- Leverage utility types like Pick, Omit\n- Use generics for reusable components',
-    tags: ['typescript', 'programming', 'tips'],
-    createdAt: new Date(Date.now() - 21600000), // 6 hours ago
-    updatedAt: new Date(Date.now() - 10800000), // 3 hours ago
-  },
-];
+import { 
+  useGetNotesQuery,
+  useCreateNoteMutation,
+  useUpdateNoteMutation,
+  useDeleteNoteMutation
+} from '@/services/notes';
 
 export function useNotes() {
-  const [notes, setNotes] = useState<Note[]>(initialNotes);
+  const { data: notes = [], isLoading } = useGetNotesQuery('');
+  const [createNoteMutation] = useCreateNoteMutation();
+  const [updateNoteMutation] = useUpdateNoteMutation();
+  const [deleteNoteMutation] = useDeleteNoteMutation();
 
   // Create a new note
-  const createNote = useCallback((input: CreateNoteInput) => {
-    const newNote: Note = {
-      id: generateId(),
+  const createNote = useCallback(async (input: CreateNoteInput) => {
+    const newNote = await createNoteMutation({
       ...input,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    setNotes(prev => [newNote, ...prev]);
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }).unwrap();
     return newNote;
-  }, []);
+  }, [createNoteMutation]);
 
   // Update an existing note
-  const updateNote = useCallback((id: string, updates: UpdateNoteInput) => {
-    setNotes(prev => 
-      prev.map(note => 
-        note.id === id 
-          ? { ...note, ...updates, updatedAt: new Date() }
-          : note
-      )
-    );
-  }, []);
+  const updateNote = useCallback(async (id: string, updates: UpdateNoteInput) => {
+    const updatedNote = await updateNoteMutation({
+      id,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    }).unwrap();
+    return updatedNote;
+  }, [updateNoteMutation]);
 
   // Delete a note
-  const deleteNote = useCallback((id: string) => {
-    setNotes(prev => prev.filter(note => note.id !== id));
-  }, []);
+  const deleteNote = useCallback(async (id: string) => {
+    await deleteNoteMutation(id).unwrap();
+  }, [deleteNoteMutation]);
 
   // Get a single note by ID
   const getNote = useCallback((id: string) => {
